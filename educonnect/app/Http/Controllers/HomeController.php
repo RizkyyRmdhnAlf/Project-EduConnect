@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Place;
+use App\Models\LearningLocation;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -52,7 +52,7 @@ class HomeController extends Controller
     }
 
     /**
-     * Retrieve the places dataset from database or fallback collection.
+     * Retrieve the learning locations dataset from database or fallback collection.
      *
      * @return Collection<int, array<string, mixed>>
      */
@@ -63,24 +63,24 @@ class HomeController extends Controller
         }
 
         try {
-            if (Schema::hasTable('places')) {
-                $dbPlaces = Place::query()->latest()->get();
+            if (Schema::hasTable('learning_locations')) {
+                $dbLocations = LearningLocation::query()->latest()->get();
 
-                if ($dbPlaces->isNotEmpty()) {
-                    return $dbPlaces->map(fn (Place $place): array => [
-                        'title' => $place->title,
+                if ($dbLocations->isNotEmpty()) {
+                    return $dbLocations->map(fn (LearningLocation $place): array => [
+                        'title' => $place->name,
                         'slug' => $place->slug,
                         'category' => $place->category,
                         'location' => $place->location,
                         'city' => $place->city ?? $place->location,
-                        'address' => $place->address,
+                        'address' => $place->public_address,
                         'description' => $place->description,
                         'facilities' => $place->facilities ?? [],
-                        'cost' => $place->cost,
+                        'cost' => $place->cost_info,
                         'is_free' => $place->is_free,
                         'schedule' => $place->schedule,
                         'weekend_open' => $place->weekend_availability,
-                        'verification_status' => $place->verification_status,
+                        'verification_status' => $place->publication_status,
                         'image' => $place->image,
                     ]);
                 }

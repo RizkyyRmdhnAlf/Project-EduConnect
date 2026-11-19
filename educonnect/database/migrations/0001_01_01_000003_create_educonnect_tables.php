@@ -11,68 +11,65 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('places', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
+        Schema::create('learning_locations', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('owner_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('name');
             $table->string('slug')->unique();
+            $table->string('category')->index();
             $table->text('description');
-            $table->foreignId('owner_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('location')->index();
             $table->string('city')->nullable()->index();
-            $table->string('address');
-            $table->string('category')->index();
-            $table->string('image')->nullable();
-            $table->string('cost')->default('Gratis');
-            $table->boolean('is_free')->default(true);
-            $table->string('schedule')->nullable();
-            $table->boolean('weekend_availability')->default(false);
-            $table->json('facilities')->nullable();
+            $table->text('public_address');
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
-            $table->string('verification_status')->default('Menunggu')->index();
+            $table->text('cost_info');
+            $table->boolean('is_free')->default(true);
+            $table->text('schedule')->nullable();
+            $table->boolean('weekend_availability')->default(false);
+            $table->text('facilities')->nullable();
+            $table->string('image')->nullable();
+            $table->string('publication_status')->default('Menunggu')->index();
             $table->timestamps();
         });
 
-        Schema::create('needs', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->string('location')->index();
-            $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+        Schema::create('learning_needs', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('reporter_id')->constrained('users')->cascadeOnDelete();
+            $table->string('title')->nullable();
             $table->string('category')->index();
-            $table->string('status')->default('Diajukan')->index();
-            $table->timestamps();
-        });
-
-        Schema::create('offers', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
             $table->text('description');
-            $table->foreignId('volunteer_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('need_id')->constrained('needs')->cascadeOnDelete();
-            $table->string('status')->default('Diajukan')->index();
+            $table->string('area_label')->index();
+            $table->string('need_status')->default('Diajukan')->index();
             $table->timestamps();
         });
 
-        Schema::create('flags', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->foreignId('reporter_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('place_id')->constrained('places')->cascadeOnDelete();
-            $table->string('moderation_status')->default('Menunggu')->index();
+        Schema::create('assistance_offers', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('need_id')->constrained('learning_needs')->cascadeOnDelete();
+            $table->foreignUuid('volunteer_id')->constrained('users')->cascadeOnDelete();
+            $table->text('offer_description');
+            $table->string('offer_status')->default('Diajukan')->index();
             $table->timestamps();
         });
 
-        Schema::create('activity_logs', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->string('entity')->index();
-            $table->unsignedBigInteger('record_id')->index();
-            $table->foreignId('owner_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('actor_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('previous_status')->nullable();
-            $table->string('new_status')->nullable();
+        Schema::create('verifications', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('target_type')->index();
+            $table->uuid('target_id')->index();
+            $table->foreignUuid('admin_id')->constrained('users')->cascadeOnDelete();
+            $table->string('decision')->index();
+            $table->text('reason')->nullable();
+            $table->timestamp('verified_at')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('audit_logs', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('actor_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->string('action')->index();
+            $table->string('target_type')->index();
+            $table->uuid('target_id')->nullable()->index();
             $table->timestamps();
         });
     }
@@ -82,10 +79,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('activity_logs');
-        Schema::dropIfExists('flags');
-        Schema::dropIfExists('offers');
-        Schema::dropIfExists('needs');
-        Schema::dropIfExists('places');
+        Schema::dropIfExists('audit_logs');
+        Schema::dropIfExists('verifications');
+        Schema::dropIfExists('assistance_offers');
+        Schema::dropIfExists('learning_needs');
+        Schema::dropIfExists('learning_locations');
     }
 };

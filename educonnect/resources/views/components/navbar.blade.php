@@ -45,33 +45,58 @@
                 Tempat Belajar
             </a>
             <a
-                href="#peran-pengguna"
+                href="{{ route('register', ['role' => 'relawan']) }}"
                 class="relative py-2 text-sm font-medium text-[#334155] transition-colors duration-200 hover:text-[#123B5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] rounded-lg"
             >
                 Jadi Relawan
             </a>
             <a
-                href="#cara-kerja"
+                href="{{ route('home') }}#cara-kerja"
                 class="relative py-2 text-sm font-medium text-[#334155] transition-colors duration-200 hover:text-[#123B5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] rounded-lg"
             >
                 Tentang Kami
             </a>
         </nav>
 
-        {{-- Tombol Masuk & Daftar Sekarang (Kanan pada Desktop) --}}
+        {{-- Tombol Masuk & Daftar Sekarang / Dashboard (Kanan pada Desktop) --}}
         <div class="hidden md:flex md:items-center md:gap-3">
-            <a
-                href="{{ url('/login') }}"
-                class="inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold text-[#123B5D] transition-colors duration-200 hover:bg-[#EAF6F4] hover:text-[#14B8A6] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6]"
-            >
-                Masuk
-            </a>
-            <a
-                href="{{ url('/registrasi') }}"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-[#14B8A6]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0D9488] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] focus-visible:ring-offset-2"
-            >
-                <span>Daftar Sekarang</span>
-            </a>
+            @auth
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="inline-flex items-center gap-2 rounded-xl bg-[#EAF6F4] px-4 py-2.5 text-sm font-semibold text-[#123B5D] transition-colors duration-200 hover:bg-[#14B8A6] hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6]"
+                >
+                    <span>Dashboard</span>
+                    <span class="rounded-md bg-white/80 px-2 py-0.5 text-xs font-bold text-[#0D9488]">
+                        {{ auth()->user()->role?->label() ?? 'Pengguna' }}
+                    </span>
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="inline-flex items-center justify-center rounded-xl border border-[#E2E8F0] px-4 py-2.5 text-sm font-semibold text-[#334155] transition-colors duration-200 hover:border-red-200 hover:bg-red-50 hover:text-red-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                    >
+                        Keluar
+                    </button>
+                </form>
+            @else
+                <a
+                    href="{{ route('login') }}"
+                    @class([
+                        'inline-flex items-center justify-center rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6]',
+                        'bg-[#EAF6F4] text-[#14B8A6]' => $active === 'login',
+                        'text-[#123B5D] hover:bg-[#EAF6F4] hover:text-[#14B8A6]' => $active !== 'login',
+                    ])
+                >
+                    Masuk
+                </a>
+                <a
+                    href="{{ route('register') }}"
+                    class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14B8A6] px-5 py-2.5 text-sm font-semibold text-white shadow-sm shadow-[#14B8A6]/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#0D9488] hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] focus-visible:ring-offset-2"
+                >
+                    <span>Daftar Sekarang</span>
+                </a>
+            @endauth
         </div>
 
         {{-- Tombol Hamburger Mobile --}}
@@ -126,13 +151,13 @@
                 <span>Tempat Belajar</span>
             </a>
             <a
-                href="#peran-pengguna"
+                href="{{ route('register', ['role' => 'relawan']) }}"
                 class="mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-[#334155] transition-colors hover:bg-[#F8FAFC] hover:text-[#123B5D]"
             >
                 <span>Jadi Relawan</span>
             </a>
             <a
-                href="#cara-kerja"
+                href="{{ route('home') }}#cara-kerja"
                 class="mobile-nav-link flex items-center justify-between rounded-xl px-4 py-3 text-base font-medium text-[#334155] transition-colors hover:bg-[#F8FAFC] hover:text-[#123B5D]"
             >
                 <span>Tentang Kami</span>
@@ -141,18 +166,36 @@
 
         {{-- Dua CTA Terpisah pada Mobile --}}
         <div class="mt-4 flex flex-col gap-2.5 border-t border-[#E2E8F0] pt-4">
-            <a
-                href="{{ url('/login') }}"
-                class="inline-flex w-full items-center justify-center rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#123B5D] transition-colors hover:border-[#123B5D] hover:bg-[#F8FAFC]"
-            >
-                Masuk
-            </a>
-            <a
-                href="{{ url('/registrasi') }}"
-                class="inline-flex w-full items-center justify-center rounded-xl bg-[#14B8A6] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0D9488]"
-            >
-                Daftar Sekarang
-            </a>
+            @auth
+                <a
+                    href="{{ route('dashboard') }}"
+                    class="inline-flex w-full items-center justify-center rounded-xl bg-[#123B5D] px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#14B8A6]"
+                >
+                    Ke Dashboard ({{ auth()->user()->role?->label() }})
+                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button
+                        type="submit"
+                        class="inline-flex w-full items-center justify-center rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50"
+                    >
+                        Keluar
+                    </button>
+                </form>
+            @else
+                <a
+                    href="{{ route('login') }}"
+                    class="inline-flex w-full items-center justify-center rounded-xl border border-[#E2E8F0] bg-white px-4 py-3 text-sm font-semibold text-[#123B5D] transition-colors hover:border-[#123B5D] hover:bg-[#F8FAFC]"
+                >
+                    Masuk
+                </a>
+                <a
+                    href="{{ route('register') }}"
+                    class="inline-flex w-full items-center justify-center rounded-xl bg-[#14B8A6] px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#0D9488]"
+                >
+                    Daftar Sekarang
+                </a>
+            @endauth
         </div>
     </div>
 </header>
