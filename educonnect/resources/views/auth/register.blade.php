@@ -340,19 +340,61 @@
                                     <label for="password" class="block text-sm font-semibold text-[#123B5D]">
                                         Kata Sandi
                                     </label>
-                                    <input
-                                        id="password"
-                                        type="password"
-                                        name="password"
-                                        required
-                                        autocomplete="new-password"
-                                        placeholder="Minimal 8 karakter"
-                                        @class([
-                                            'mt-2 w-full rounded-xl border px-4 py-3 text-sm text-[#123B5D] placeholder:text-[#334155]/50 transition focus:bg-white focus:outline-none focus:ring-2',
-                                            'border-red-300 bg-red-50/40 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
-                                            'border-[#E2E8F0] bg-[#F8FAFC] focus:border-[#14B8A6] focus:ring-[#14B8A6]/20' => ! $errors->has('password'),
-                                        ])
-                                    />
+                                    <div class="relative mt-2">
+                                        <input
+                                            id="password"
+                                            type="password"
+                                            name="password"
+                                            required
+                                            autocomplete="new-password"
+                                            placeholder="Minimal 8 karakter"
+                                            @class([
+                                                'w-full rounded-xl border py-3 pr-11 pl-4 text-sm text-[#123B5D] placeholder:text-[#334155]/50 transition focus:bg-white focus:outline-none focus:ring-2',
+                                                'border-red-300 bg-red-50/40 focus:border-red-500 focus:ring-red-500/20' => $errors->has('password'),
+                                                'border-[#E2E8F0] bg-[#F8FAFC] focus:border-[#14B8A6] focus:ring-[#14B8A6]/20' => ! $errors->has('password'),
+                                            ])
+                                        />
+                                        <button
+                                            type="button"
+                                            id="toggle-password"
+                                            aria-label="Tampilkan kata sandi"
+                                            aria-pressed="false"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#334155]/60 transition hover:text-[#123B5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] rounded-r-xl"
+                                        >
+                                            <svg
+                                                id="eye-open-password"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                            <svg
+                                                id="eye-closed-password"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="hidden h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M3 3l18 18" />
+                                                <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
+                                                <path d="M9.88 5.09A10.77 10.77 0 0 1 12 4.8c5.2 0 9.27 3.11 10.5 7.2a10.9 10.9 0 0 1-4.1 5.5" />
+                                                <path d="M6.61 6.61A11.7 11.7 0 0 0 1.5 12c1.23 4.09 5.3 7.2 10.5 7.2 1.17 0 2.28-.19 3.31-.55" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                     @error('password')
                                         <p class="mt-1.5 text-xs font-medium text-red-600">{{ $message }}</p>
                                     @enderror
@@ -363,15 +405,57 @@
                                     <label for="password_confirmation" class="block text-sm font-semibold text-[#123B5D]">
                                         Konfirmasi Kata Sandi
                                     </label>
-                                    <input
-                                        id="password_confirmation"
-                                        type="password"
-                                        name="password_confirmation"
-                                        required
-                                        autocomplete="new-password"
-                                        placeholder="Ulangi kata sandi Anda"
-                                        class="mt-2 w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 text-sm text-[#123B5D] placeholder:text-[#334155]/50 transition focus:border-[#14B8A6] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20"
-                                    />
+                                    <div class="relative mt-2">
+                                        <input
+                                            id="password_confirmation"
+                                            type="password"
+                                            name="password_confirmation"
+                                            required
+                                            autocomplete="new-password"
+                                            placeholder="Ulangi kata sandi Anda"
+                                            class="w-full rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] py-3 pr-11 pl-4 text-sm text-[#123B5D] placeholder:text-[#334155]/50 transition focus:border-[#14B8A6] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20"
+                                        />
+                                        <button
+                                            type="button"
+                                            id="toggle-password-confirmation"
+                                            aria-label="Tampilkan konfirmasi kata sandi"
+                                            aria-pressed="false"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#334155]/60 transition hover:text-[#123B5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] rounded-r-xl"
+                                        >
+                                            <svg
+                                                id="eye-open-confirmation"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                            <svg
+                                                id="eye-closed-confirmation"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="hidden h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M3 3l18 18" />
+                                                <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
+                                                <path d="M9.88 5.09A10.77 10.77 0 0 1 12 4.8c5.2 0 9.27 3.11 10.5 7.2a10.9 10.9 0 0 1-4.1 5.5" />
+                                                <path d="M6.61 6.61A11.7 11.7 0 0 0 1.5 12c1.23 4.09 5.3 7.2 10.5 7.2 1.17 0 2.28-.19 3.31-.55" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -407,6 +491,50 @@
         @stack('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
+                // Fitur tampil/sembunyikan kata sandi dan konfirmasi kata sandi.
+                function setupPasswordToggle(inputId, buttonId, openIconId, closedIconId, showLabel, hideLabel) {
+                    const passwordInput = document.getElementById(inputId);
+                    const toggleButton = document.getElementById(buttonId);
+                    const eyeOpen = document.getElementById(openIconId);
+                    const eyeClosed = document.getElementById(closedIconId);
+
+                    if (!passwordInput || !toggleButton || !eyeOpen || !eyeClosed) {
+                        return;
+                    }
+
+                    toggleButton.addEventListener('click', function () {
+                        const willShowPassword = passwordInput.type === 'password';
+
+                        passwordInput.type = willShowPassword ? 'text' : 'password';
+                        eyeOpen.classList.toggle('hidden', !willShowPassword);
+                        eyeClosed.classList.toggle('hidden', willShowPassword);
+
+                        toggleButton.setAttribute(
+                            'aria-label',
+                            willShowPassword ? hideLabel : showLabel
+                        );
+                        toggleButton.setAttribute('aria-pressed', String(willShowPassword));
+                    });
+                }
+
+                setupPasswordToggle(
+                    'password',
+                    'toggle-password',
+                    'eye-open-password',
+                    'eye-closed-password',
+                    'Tampilkan kata sandi',
+                    'Sembunyikan kata sandi'
+                );
+
+                setupPasswordToggle(
+                    'password_confirmation',
+                    'toggle-password-confirmation',
+                    'eye-open-confirmation',
+                    'eye-closed-confirmation',
+                    'Tampilkan konfirmasi kata sandi',
+                    'Sembunyikan konfirmasi kata sandi'
+                );
+
                 const roleCopy = {
                     pelajar: {
                         banner: 'Anda mendaftar sebagai <strong>Pelajar / Siswa</strong> untuk mencari ruang belajar dan melaporkan kebutuhan pendidikan.',

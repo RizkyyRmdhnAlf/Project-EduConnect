@@ -197,12 +197,44 @@
                                         <button
                                             type="button"
                                             id="toggle-password"
-                                            aria-label="Tampilkan atau sembunyikan kata sandi"
-                                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#334155]/60 hover:text-[#123B5D]"
+                                            aria-label="Tampilkan kata sandi"
+                                            aria-pressed="false"
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3.5 text-[#334155]/60 hover:text-[#123B5D] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] rounded-r-xl"
                                         >
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                            {{-- Ikon Mata --}}
+                                            <svg
+                                                id="eye-open"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
                                                 <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0" />
                                                 <circle cx="12" cy="12" r="3" />
+                                            </svg>
+
+                                            {{-- Ikon Mata Dicoret --}}
+                                            <svg
+                                                id="eye-closed"
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="hidden h-5 w-5"
+                                                viewBox="0 0 24 24"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                stroke-width="2"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                aria-hidden="true"
+                                            >
+                                                <path d="M3 3l18 18" />
+                                                <path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
+                                                <path d="M9.88 5.09A10.77 10.77 0 0 1 12 4.8c5.2 0 9.27 3.11 10.5 7.2a10.9 10.9 0 0 1-4.1 5.5" />
+                                                <path d="M6.61 6.61A11.7 11.7 0 0 0 1.5 12c1.23 4.09 5.3 7.2 10.5 7.2 1.17 0 2.28-.19 3.31-.55" />
                                             </svg>
                                         </button>
                                     </div>
@@ -267,9 +299,24 @@
                 const toggleBtn = document.getElementById('toggle-password');
 
                 if (toggleBtn && passwordInput) {
+                    const eyeOpen = document.getElementById('eye-open');
+                    const eyeClosed = document.getElementById('eye-closed');
+
                     toggleBtn.addEventListener('click', function () {
-                        const nextType = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                        passwordInput.setAttribute('type', nextType);
+                        const isPassword = passwordInput.type === 'password';
+
+                        passwordInput.type = isPassword ? 'text' : 'password';
+
+                        if (eyeOpen && eyeClosed) {
+                            eyeOpen.classList.toggle('hidden', !isPassword);
+                            eyeClosed.classList.toggle('hidden', isPassword);
+                        }
+
+                        toggleBtn.setAttribute(
+                            'aria-label',
+                            isPassword ? 'Sembunyikan kata sandi' : 'Tampilkan kata sandi'
+                        );
+                        toggleBtn.setAttribute('aria-pressed', String(isPassword));
                     });
                 }
 
