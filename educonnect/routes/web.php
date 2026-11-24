@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LearningPlaceController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -40,3 +41,7 @@ Route::middleware(['auth', 'role:relawan,admin'])->group(function (): void {
 Route::middleware(['auth', 'role:pelajar,admin'])->group(function (): void {
     Route::get('/dashboard/pelajar', [DashboardController::class, 'index'])->name('dashboard.pelajar');
 });
+
+
+Route::get('/tempat-belajar', [LearningPlaceController::class, 'index'])
+    ->name('learning-places.index');
