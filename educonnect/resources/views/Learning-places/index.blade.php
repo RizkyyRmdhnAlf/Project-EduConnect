@@ -114,6 +114,24 @@
             </div>
 
 
+            {{-- Active Search / Filter Indicator --}}
+            @if(!empty($keyword) || !empty($locationFilter))
+                <div class="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#14B8A6]/30 bg-[#EAF6F4] px-5 py-3.5 text-sm text-[#123B5D]">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="font-semibold">Menampilkan hasil pencarian</span>
+                        @if(!empty($keyword))
+                            <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Kata kunci: "{{ $keyword }}"</span>
+                        @endif
+                        @if(!empty($locationFilter))
+                            <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Lokasi: {{ $locationFilter }}</span>
+                        @endif
+                    </div>
+                    <a href="{{ route('learning-places.index') }}" class="text-xs font-bold text-[#14B8A6] hover:underline">
+                        Reset Filter
+                    </a>
+                </div>
+            @endif
+
             {{-- Learning Places Grid --}}
             @forelse ($learningPlaces as $place)
 
