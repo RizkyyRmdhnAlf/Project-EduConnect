@@ -27,7 +27,7 @@ class HomeController extends Controller
             : 100;
         $contributionWays = 3;
 
-        $locations = $verifiedPlaces
+        $locations = $places
             ->pluck('city')
             ->filter()
             ->unique()
