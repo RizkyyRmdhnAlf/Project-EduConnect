@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'owner_id',
@@ -28,6 +29,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'schedule',
     'weekend_availability',
     'facilities',
+    'capacity',
+    'contact_info',
+    'age_group',
+    'access_notes',
     'image',
     'publication_status',
     'verification_status',
@@ -52,6 +57,7 @@ class LearningLocation extends Model
             'is_free' => 'boolean',
             'weekend_availability' => 'boolean',
             'facilities' => 'array',
+            'capacity' => 'integer',
             'latitude' => 'float',
             'longitude' => 'float',
         ];
@@ -107,5 +113,13 @@ class LearningLocation extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    /**
+     * Get the content flags submitted for this learning location.
+     */
+    public function flags(): HasMany
+    {
+        return $this->hasMany(Flag::class, 'learning_location_id');
     }
 }

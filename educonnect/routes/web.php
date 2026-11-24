@@ -3,8 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LearningPlaceController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -42,6 +42,9 @@ Route::middleware(['auth', 'role:pelajar,admin'])->group(function (): void {
     Route::get('/dashboard/pelajar', [DashboardController::class, 'index'])->name('dashboard.pelajar');
 });
 
-
 Route::get('/tempat-belajar', [LearningPlaceController::class, 'index'])
     ->name('learning-places.index');
+Route::get('/tempat-belajar/{slug}', [LearningPlaceController::class, 'show'])
+    ->name('learning-places.show');
+Route::post('/tempat-belajar/{slug}/laporkan', [LearningPlaceController::class, 'report'])
+    ->name('learning-places.report');
