@@ -113,9 +113,53 @@
 
             </div>
 
+            <form action="{{ route('learning-places.index') }}" method="GET" role="search" aria-label="Cari tempat belajar"
+                  class="mb-8 grid gap-4 rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:grid-cols-2 lg:grid-cols-5">
+                <div class="sm:col-span-2 lg:col-span-2">
+                    <label for="search-keyword" class="mb-1.5 block text-xs font-semibold text-[#334155]">Kata kunci</label>
+                    <input id="search-keyword" type="search" name="q" value="{{ $keyword }}"
+                           placeholder="Nama, kategori, fasilitas..."
+                           class="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2.5 text-sm text-[#123B5D] focus:border-[#14B8A6] focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20">
+                </div>
+                <div>
+                    <label for="search-city" class="mb-1.5 block text-xs font-semibold text-[#334155]">Kota</label>
+                    <input id="search-city" type="text" name="kota" value="{{ $cityFilter }}"
+                           placeholder="Contoh: Bandung"
+                           class="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2.5 text-sm text-[#123B5D] focus:border-[#14B8A6] focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20">
+                </div>
+                <div>
+                    <label for="search-district" class="mb-1.5 block text-xs font-semibold text-[#334155]">Kabupaten</label>
+                    <input id="search-district" type="text" name="kabupaten" value="{{ $districtFilter }}"
+                           placeholder="Contoh: Sleman"
+                           class="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2.5 text-sm text-[#123B5D] focus:border-[#14B8A6] focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20">
+                </div>
+                <div>
+                    <label for="search-price" class="mb-1.5 block text-xs font-semibold text-[#334155]">Harga</label>
+                    <select id="search-price" name="harga"
+                            class="w-full rounded-xl border border-[#CBD5E1] bg-[#F8FAFC] px-3.5 py-2.5 text-sm text-[#123B5D] focus:border-[#14B8A6] focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20">
+                        <option value="">Semua harga</option>
+                        <option value="gratis" @selected($priceFilter === 'gratis')>Gratis</option>
+                        <option value="berbayar" @selected($priceFilter === 'berbayar')>Berbayar</option>
+                    </select>
+                </div>
+                @if($locationFilter !== '')
+                    <input type="hidden" name="lokasi" value="{{ $locationFilter }}">
+                @endif
+                <div class="flex items-end gap-2 sm:col-span-2 lg:col-span-5">
+                    <button type="submit"
+                            class="inline-flex items-center justify-center rounded-xl bg-[#123B5D] px-5 py-2.5 text-sm font-bold text-white transition hover:bg-[#0D9488]">
+                        Cari Tempat
+                    </button>
+                    <a href="{{ route('learning-places.index') }}"
+                       class="inline-flex items-center justify-center rounded-xl border border-[#CBD5E1] px-5 py-2.5 text-sm font-semibold text-[#334155] transition hover:bg-[#F8FAFC]">
+                        Reset
+                    </a>
+                </div>
+            </form>
+
 
             {{-- Active Search / Filter Indicator --}}
-            @if(!empty($keyword) || !empty($locationFilter))
+            @if(!empty($keyword) || !empty($locationFilter) || !empty($cityFilter) || !empty($districtFilter) || !empty($priceFilter))
                 <div class="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#14B8A6]/30 bg-[#EAF6F4] px-5 py-3.5 text-sm text-[#123B5D]">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="font-semibold">Menampilkan hasil pencarian</span>
@@ -124,6 +168,15 @@
                         @endif
                         @if(!empty($locationFilter))
                             <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Lokasi: {{ $locationFilter }}</span>
+                        @endif
+                        @if(!empty($cityFilter))
+                            <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Kota: {{ $cityFilter }}</span>
+                        @endif
+                        @if(!empty($districtFilter))
+                            <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Kabupaten: {{ $districtFilter }}</span>
+                        @endif
+                        @if($priceFilter === 'gratis' || $priceFilter === 'berbayar')
+                            <span class="rounded-lg bg-white px-2.5 py-1 text-xs font-bold text-[#0D9488]">Harga: {{ ucfirst($priceFilter) }}</span>
                         @endif
                     </div>
                     <a href="{{ route('learning-places.index') }}" class="text-xs font-bold text-[#14B8A6] hover:underline">

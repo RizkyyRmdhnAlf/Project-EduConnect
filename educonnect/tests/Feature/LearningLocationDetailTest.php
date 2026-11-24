@@ -170,4 +170,66 @@ class LearningLocationDetailTest extends TestCase
             ->assertSee('Rumah Baca Pelita Nusantara')
             ->assertDontSee('Perpustakaan Komunitas Cendekia');
     }
+
+    public function test_directory_filters_by_city_district_and_price_together(): void
+    {
+        LearningLocation::query()->create([
+            'name' => 'Kelas Sains Kabupaten Bandung',
+            'slug' => 'kelas-sains-kabupaten-bandung',
+            'category' => 'Bimbingan Belajar',
+            'location' => 'Kabupaten Bandung, Jawa Barat',
+            'city' => 'Bandung',
+            'public_address' => 'Jl. Pendidikan No. 12',
+            'description' => 'Kelas sains untuk pelajar.',
+            'cost_info' => 'Rp50.000 per sesi',
+            'is_free' => false,
+        ]);
+
+        LearningLocation::query()->create([
+            'name' => 'Rumah Baca Gratis Kabupaten Bandung',
+            'slug' => 'rumah-baca-gratis-kabupaten-bandung',
+            'category' => 'Rumah Belajar',
+            'location' => 'Kabupaten Bandung, Jawa Barat',
+            'city' => 'Bandung',
+            'public_address' => 'Jl. Literasi No. 8',
+            'description' => 'Ruang baca gratis untuk pelajar.',
+            'cost_info' => 'Gratis',
+            'is_free' => true,
+        ]);
+
+        LearningLocation::query()->create([
+            'name' => 'Kelas Sains Kota Bogor',
+            'slug' => 'kelas-sains-kota-bogor',
+            'category' => 'Bimbingan Belajar',
+            'location' => 'Kota Bogor, Jawa Barat',
+            'city' => 'Bogor',
+            'public_address' => 'Jl. Pendidikan No. 2',
+            'description' => 'Kelas sains untuk pelajar.',
+            'cost_info' => 'Rp50.000 per sesi',
+            'is_free' => false,
+        ]);
+
+        $this->get(route('learning-places.index', [
+            'kota' => 'Bandung',
+            'kabupaten' => 'Kabupaten Bandung',
+            'harga' => 'berbayar',
+        ]))
+            ->assertOk()
+            ->assertSee('Kelas Sains Kabupaten Bandung')
+            ->assertDontSee('Rumah Baca Gratis Kabupaten Bandung')
+            ->assertDontSee('Kelas Sains Kota Bogor')
+            ->assertSee('name="kota"', false)
+            ->assertSee('name="kabupaten"', false)
+            ->assertSee('name="harga"', false);
+
+        $this->get(route('learning-places.index', [
+            'kota' => 'Bandung',
+            'kabupaten' => 'Kabupaten Bandung',
+            'harga' => 'gratis',
+        ]))
+            ->assertOk()
+            ->assertSee('Rumah Baca Gratis Kabupaten Bandung')
+            ->assertDontSee('Kelas Sains Kabupaten Bandung')
+            ->assertDontSee('Kelas Sains Kota Bogor');
+    }
 }

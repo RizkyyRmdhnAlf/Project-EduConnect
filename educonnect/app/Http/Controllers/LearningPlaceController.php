@@ -25,8 +25,19 @@ class LearningPlaceController extends Controller
     {
         $learningPlaces = $this->getCombinedPlaces();
 
-        $keyword = trim((string) $request->query('q', ''));
-        $locationFilter = trim((string) $request->query('lokasi', ''));
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:255'],
+            'lokasi' => ['nullable', 'string', 'max:100'],
+            'kota' => ['nullable', 'string', 'max:100'],
+            'kabupaten' => ['nullable', 'string', 'max:100'],
+            'harga' => ['nullable', 'in:gratis,berbayar'],
+        ]);
+
+        $keyword = trim((string) ($filters['q'] ?? ''));
+        $locationFilter = trim((string) ($filters['lokasi'] ?? ''));
+        $cityFilter = trim((string) ($filters['kota'] ?? ''));
+        $districtFilter = trim((string) ($filters['kabupaten'] ?? ''));
+        $priceFilter = $filters['harga'] ?? '';
 
         if ($keyword !== '') {
             $needle = Str::lower($keyword);
@@ -52,10 +63,42 @@ class LearningPlaceController extends Controller
             });
         }
 
+        if ($cityFilter !== '') {
+            $cityNeedle = Str::lower($cityFilter);
+            $learningPlaces = $learningPlaces->filter(function (array $place) use ($cityNeedle): bool {
+                $city = $place['city'] ?? '';
+                if ($city === '') {
+                    $city = $place['location'] ?? '';
+                }
+
+                return str_contains(Str::lower((string) $city), $cityNeedle);
+            });
+        }
+
+        if ($districtFilter !== '') {
+            $districtNeedle = Str::lower($districtFilter);
+            $learningPlaces = $learningPlaces->filter(function (array $place) use ($districtNeedle): bool {
+                $districtText = Str::lower(($place['location'] ?? '').' '.($place['address'] ?? ''));
+
+                return str_contains($districtText, $districtNeedle);
+            });
+        }
+
+        if ($priceFilter === 'gratis') {
+            $learningPlaces = $learningPlaces->where('is_free', true);
+        } elseif ($priceFilter === 'berbayar') {
+            $learningPlaces = $learningPlaces->filter(function (array $place): bool {
+                return ! ($place['is_free'] ?? true) && ($place['cost'] ?? null) !== 'Belum ditentukan';
+            });
+        }
+
         return view('learning-places.index', [
             'learningPlaces' => $learningPlaces->values(),
             'keyword' => $keyword,
             'locationFilter' => $locationFilter,
+            'cityFilter' => $cityFilter,
+            'districtFilter' => $districtFilter,
+            'priceFilter' => $priceFilter,
         ]);
     }
 

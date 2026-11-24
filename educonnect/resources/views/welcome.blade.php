@@ -84,9 +84,9 @@
                                     {{-- Divider Desktop --}}
                                     <div class="hidden h-8 w-px bg-[#E2E8F0] sm:block" aria-hidden="true"></div>
 
-                                    {{-- Dropdown Lokasi --}}
+                                    {{-- Dropdown Kota --}}
                                     <div class="relative sm:w-52">
-                                        <label for="search-location" class="sr-only">Pilih lokasi kota</label>
+                                        <label for="search-location" class="sr-only">Pilih kota</label>
                                         <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#14B8A6]">
                                             {{-- Lucide MapPin Icon --}}
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -96,10 +96,10 @@
                                         </div>
                                         <select
                                             id="search-location"
-                                            name="lokasi"
+                                            name="kota"
                                             class="w-full appearance-none rounded-xl border border-transparent bg-[#F8FAFC] py-3 pr-9 pl-11 text-sm font-medium text-[#123B5D] focus:border-[#14B8A6] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20"
                                         >
-                                            <option value="">Semua Lokasi</option>
+                                            <option value="">Semua Kota</option>
                                             @foreach($locations as $city)
                                                 <option value="{{ $city }}">{{ $city }}</option>
                                             @endforeach
@@ -123,6 +123,26 @@
                                             <path d="m12 5 7 7-7 7" />
                                         </svg>
                                     </button>
+                                </div>
+                                <div class="mt-3 grid gap-3 sm:grid-cols-[1fr_1fr]">
+                                    <label class="sr-only" for="search-district">Kabupaten</label>
+                                    <input
+                                        type="text"
+                                        id="search-district"
+                                        name="kabupaten"
+                                        placeholder="Kabupaten (contoh: Sleman)"
+                                        class="w-full rounded-xl border border-transparent bg-[#F8FAFC] px-4 py-3 text-sm text-[#123B5D] placeholder:text-[#334155]/60 focus:border-[#14B8A6] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20"
+                                    />
+                                    <label class="sr-only" for="search-price">Harga</label>
+                                    <select
+                                        id="search-price"
+                                        name="harga"
+                                        class="w-full rounded-xl border border-transparent bg-[#F8FAFC] px-4 py-3 text-sm font-medium text-[#123B5D] focus:border-[#14B8A6] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#14B8A6]/20"
+                                    >
+                                        <option value="">Semua harga</option>
+                                        <option value="gratis">Gratis</option>
+                                        <option value="berbayar">Berbayar</option>
+                                    </select>
                                 </div>
                             </form>
 
