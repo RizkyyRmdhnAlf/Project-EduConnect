@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NeedCategory;
 use App\Models\Report;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use RuntimeException;
 
 class ReportController extends Controller
@@ -16,7 +18,11 @@ class ReportController extends Controller
      */
     public function create(): View
     {
-        return view('reports.create');
+        $categories = NeedCategory::query()
+            ->orderBy('id')
+            ->get();
+
+        return view('reports.create', compact('categories'));
     }
 
     /**
@@ -83,7 +89,12 @@ class ReportController extends Controller
     {
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:150'],
-            'category' => ['required', 'string', 'max:255'],
+            'category' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::exists('need_categories', 'name'),
+            ],
             'description' => ['required', 'string', 'min:10', 'max:1500'],
             'location' => ['required', 'string', 'max:255'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -92,6 +103,7 @@ class ReportController extends Controller
             'title.max' => 'Judul laporan maksimal 150 karakter.',
             'category.required' => 'Kategori kebutuhan wajib diisi.',
             'category.max' => 'Kategori maksimal 255 karakter.',
+            'category.exists' => 'Kategori yang dipilih tidak tersedia.',
             'description.required' => 'Deskripsi kebutuhan wajib diisi.',
             'description.min' => 'Deskripsi kebutuhan minimal 10 karakter.',
             'description.max' => 'Deskripsi kebutuhan maksimal 1500 karakter.',

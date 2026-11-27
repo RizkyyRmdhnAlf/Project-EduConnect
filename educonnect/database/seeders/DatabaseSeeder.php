@@ -21,6 +21,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(NeedCategorySeeder::class);
+
         $admin = User::query()->updateOrCreate(
             ['email' => 'admin@educonnect.id'],
             [
