@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LearningPlaceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -48,3 +49,10 @@ Route::get('/tempat-belajar/{slug}', [LearningPlaceController::class, 'show'])
     ->name('learning-places.show');
 Route::post('/tempat-belajar/{slug}/laporkan', [LearningPlaceController::class, 'report'])
     ->name('learning-places.report');
+
+// Laporan Kebutuhan Pendidikan
+Route::get('/laporan', [ReportController::class, 'index'])
+    ->name('reports.index');
+
+Route::get('/laporan/{report}', [ReportController::class, 'show'])
+    ->name('reports.show');
