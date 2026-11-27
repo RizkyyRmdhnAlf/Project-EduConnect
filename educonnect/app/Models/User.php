@@ -128,6 +128,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Reports submitted through the education needs form.
+     */
+    public function submittedReports(): HasMany
+    {
+        return $this->hasMany(Report::class, 'reporter_id');
+    }
+
+    /**
      * Assistance offers submitted by this volunteer (`submits` in ERD).
      */
     public function submittedOffers(): HasMany

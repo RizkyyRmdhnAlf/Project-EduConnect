@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Report;
 use App\Models\User;
+use Database\Seeders\NeedCategorySeeder;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -92,12 +93,20 @@ class ReportPageTest extends TestCase
 
     public function test_pelajar_can_open_the_report_creation_form(): void
     {
+        $this->seed(NeedCategorySeeder::class);
+
         $this->actingAs(User::factory()->pelajar()->create())
             ->get(route('reports.create'))
             ->assertOk()
             ->assertSee('Ajukan Kebutuhan Pendidikan')
             ->assertSee('name="title"', false)
             ->assertSee('name="category"', false)
+            ->assertSee('value="Buku"', false)
+            ->assertSee('value="Alat Tulis"', false)
+            ->assertSee('value="Fasilitas"', false)
+            ->assertSee('value="Internet"', false)
+            ->assertSee('value="Bimbingan Belajar"', false)
+            ->assertSee('value="Lainnya"', false)
             ->assertSee('name="description"', false)
             ->assertSee('name="location"', false)
             ->assertSee('name="image"', false);
@@ -118,12 +127,13 @@ class ReportPageTest extends TestCase
 
     public function test_valid_report_submission_stores_an_image_as_waiting_and_displays_the_report(): void
     {
+        $this->seed(NeedCategorySeeder::class);
         Storage::fake('public');
         $user = User::factory()->pelajar()->create();
 
         $response = $this->actingAs($user)->post(route('reports.store'), [
             'title' => 'Bantuan buku untuk siswa',
-            'category' => 'Perlengkapan',
+            'category' => 'Buku',
             'description' => 'Siswa membutuhkan buku pelajaran tambahan.',
             'location' => 'Yogyakarta',
             'image' => UploadedFile::fake()->image('buku.jpg'),
@@ -137,18 +147,29 @@ class ReportPageTest extends TestCase
         $report = Report::query()->where('title', 'Bantuan buku untuk siswa')->firstOrFail();
 
         $this->assertSame('Menunggu', $report->status);
-        $this->assertSame('Perlengkapan', $report->category);
+        $this->assertSame('Buku', $report->category);
         $this->assertSame('Yogyakarta', $report->location);
+        $this->assertSame($user->id, $report->reporter_id);
+        $this->assertTrue($report->reporter->is($user));
         Storage::disk('public')->assertExists($report->image);
 
         $this->get(route('reports.index'))
             ->assertOk()
             ->assertSee('Bantuan buku untuk siswa')
+            ->assertSee('Buku')
             ->assertSee('Laporan kebutuhan pendidikan berhasil dikirim.');
+
+        $this->get(route('reports.show', $report))
+            ->assertOk()
+            ->assertSee('Bantuan buku untuk siswa')
+            ->assertSee('Buku')
+            ->assertSee('Siswa membutuhkan buku pelajaran tambahan.');
     }
 
     public function test_report_can_be_submitted_without_an_image(): void
     {
+        $this->seed(NeedCategorySeeder::class);
+
         $this->actingAs(User::factory()->pelajar()->create())
             ->post(route('reports.store'), [
                 'title' => 'Pendampingan belajar matematika',
@@ -186,15 +207,33 @@ class ReportPageTest extends TestCase
         $this->assertDatabaseCount('reports', 0);
     }
 
+    public function test_report_validation_failure_shows_a_failure_notification_on_the_form(): void
+    {
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->from(route('reports.create'))
+            ->post(route('reports.store'), [
+                'title' => '',
+                'category' => '',
+                'description' => '',
+                'location' => '',
+            ])
+            ->assertRedirect(route('reports.create'));
+
+        $this->get(route('reports.create'))
+            ->assertOk()
+            ->assertSee('Laporan belum dapat disimpan. Periksa kembali isian yang ditandai.');
+    }
+
     public function test_non_image_upload_is_rejected_without_saving_a_report(): void
     {
+        $this->seed(NeedCategorySeeder::class);
         Storage::fake('public');
 
         $this->actingAs(User::factory()->pelajar()->create())
             ->from(route('reports.create'))
             ->post(route('reports.store'), [
                 'title' => 'Bantuan alat tulis',
-                'category' => 'Perlengkapan',
+                'category' => 'Buku',
                 'description' => 'Membutuhkan alat tulis untuk kegiatan belajar.',
                 'location' => 'Surabaya',
                 'image' => UploadedFile::fake()->create('catatan.txt', 10, 'text/plain'),
@@ -206,5 +245,25 @@ class ReportPageTest extends TestCase
 
         $this->assertDatabaseCount('reports', 0);
         Storage::disk('public')->assertDirectoryEmpty('reports');
+    }
+
+    public function test_report_submission_rejects_a_category_that_is_not_in_the_database(): void
+    {
+        $this->seed(NeedCategorySeeder::class);
+
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->from(route('reports.create'))
+            ->post(route('reports.store'), [
+                'title' => 'Bantuan alat belajar',
+                'category' => 'Kategori tidak terdaftar',
+                'description' => 'Membutuhkan bantuan untuk kegiatan belajar.',
+                'location' => 'Jakarta',
+            ])
+            ->assertRedirect(route('reports.create'))
+            ->assertSessionHasErrors([
+                'category' => 'Kategori yang dipilih tidak tersedia.',
+            ]);
+
+        $this->assertDatabaseCount('reports', 0);
     }
 }
