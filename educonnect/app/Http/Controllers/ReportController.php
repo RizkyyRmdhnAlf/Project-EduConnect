@@ -4,11 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
+    /**
+     * Show the form for submitting a report.
+     */
+    public function create(): View
+    {
+        return view('reports.create');
+    }
+
     /**
      * Display a listing of reports.
      */
@@ -64,6 +73,62 @@ class ReportController extends Controller
             'statistics',
             'categories'
         ));
+    }
+
+    /**
+     * Store a new education needs report.
+     */
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'category' => ['required', 'string', 'max:100'],
+            'description' => ['required', 'string', 'max:5000'],
+            'location' => ['required', 'string', 'max:255'],
+            'image' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'extensions:jpg,jpeg,png,webp',
+                'max:5120',
+            ],
+        ], [
+            'title.required' => 'Judul laporan wajib diisi.',
+            'title.max' => 'Judul laporan maksimal 255 karakter.',
+            'category.required' => 'Kategori laporan wajib diisi.',
+            'category.max' => 'Kategori laporan maksimal 100 karakter.',
+            'description.required' => 'Deskripsi laporan wajib diisi.',
+            'description.max' => 'Deskripsi laporan maksimal 5.000 karakter.',
+            'location.required' => 'Lokasi laporan wajib diisi.',
+            'location.max' => 'Lokasi laporan maksimal 255 karakter.',
+            'image.image' => 'File yang diunggah harus berupa gambar.',
+            'image.mimes' => 'Foto harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'image.extensions' => 'Ekstensi foto harus JPG, JPEG, PNG, atau WEBP.',
+            'image.max' => 'Ukuran foto maksimal 5 MB.',
+        ]);
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('reports', 'public');
+
+            if ($imagePath === false) {
+                throw new \RuntimeException('The report image could not be stored.');
+            }
+        }
+
+        Report::query()->create([
+            'title' => $validated['title'],
+            'category' => $validated['category'],
+            'description' => $validated['description'],
+            'location' => $validated['location'],
+            'image' => $imagePath,
+            'status' => 'Menunggu',
+        ]);
+
+        return redirect()
+            ->route('reports.index')
+            ->with('success', 'Laporan kebutuhan pendidikan berhasil dikirim.');
     }
 
     /**
