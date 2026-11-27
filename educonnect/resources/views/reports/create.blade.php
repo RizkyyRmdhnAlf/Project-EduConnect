@@ -29,6 +29,17 @@
                 </p>
             </div>
 
+            @if (session('error') || $errors->any())
+                <div
+                    role="alert"
+                    aria-live="assertive"
+                    class="mx-6 mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800 sm:mx-10"
+                >
+                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-600" aria-hidden="true"></i>
+                    <p>{{ session('error', 'Laporan belum dapat disimpan. Periksa kembali isian yang ditandai.') }}</p>
+                </div>
+            @endif
+
             <form
                 action="{{ route('reports.store') }}"
                 method="POST"
@@ -62,17 +73,23 @@
                         <label for="category" class="mb-2 block text-sm font-semibold text-[#334155]">
                             Kategori <span class="text-red-500">*</span>
                         </label>
-                        <input
+                        <select
                             id="category"
                             name="category"
-                            type="text"
-                            value="{{ old('category') }}"
-                            maxlength="255"
+                            class="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#123B5D] outline-none transition focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10"
                             required
-                            placeholder="Contoh: Perlengkapan belajar"
-                            class="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#123B5D] outline-none transition placeholder:text-[#94A3B8] focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10"
                             @error('category') aria-invalid="true" aria-describedby="category-error" @enderror
                         >
+                            <option value="">Pilih kategori kebutuhan</option>
+                            @foreach ($categories as $category)
+                                <option
+                                    value="{{ $category->name }}"
+                                    @selected(old('category') === $category->name)
+                                >
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('category')
                             <p id="category-error" class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror

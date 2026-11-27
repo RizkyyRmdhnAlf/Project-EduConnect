@@ -28,6 +28,10 @@ use Illuminate\Notifications\Notifiable;
 #[Hidden(['password_hash', 'password', 'remember_token'])]
 class User extends Authenticatable
 {
+    public const ACCOUNT_STATUS_ACTIVE = 'active';
+
+    public const ACCOUNT_STATUS_PENDING_VERIFICATION = 'pending_verification';
+
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasUuids, Notifiable;
 
@@ -38,7 +42,7 @@ class User extends Authenticatable
      */
     protected $attributes = [
         'role' => 'pelajar',
-        'account_status' => 'active',
+        'account_status' => self::ACCOUNT_STATUS_ACTIVE,
     ];
 
     /**
@@ -108,7 +112,15 @@ class User extends Authenticatable
      */
     public function isActive(): bool
     {
-        return $this->account_status === 'active';
+        return $this->account_status === self::ACCOUNT_STATUS_ACTIVE;
+    }
+
+    /**
+     * Determine whether a manager account is waiting for administrator review.
+     */
+    public function isPendingVerification(): bool
+    {
+        return $this->account_status === self::ACCOUNT_STATUS_PENDING_VERIFICATION;
     }
 
     /**
@@ -125,6 +137,14 @@ class User extends Authenticatable
     public function reportedNeeds(): HasMany
     {
         return $this->hasMany(LearningNeed::class, 'reporter_id');
+    }
+
+    /**
+     * Reports submitted through the education needs form.
+     */
+    public function submittedReports(): HasMany
+    {
+        return $this->hasMany(Report::class, 'reporter_id');
     }
 
     /**

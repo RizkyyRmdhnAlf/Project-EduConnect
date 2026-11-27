@@ -33,23 +33,24 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        /** @var User|null $user */
         $user = Auth::user();
 
-        if ($user !== null) {
-            try {
-                AuditLog::query()->create([
-                    'actor_id' => $user->id,
-                    'action' => 'user_login',
-                    'target_type' => 'user',
-                    'target_id' => $user->id,
-                ]);
-            } catch (Throwable) {
-                // Continue even if audit log table is unavailable.
-            }
+        if (! ($user instanceof User)) {
+            abort(401);
         }
 
-        return redirect()->intended(route('dashboard'))
+        try {
+            AuditLog::query()->create([
+                'actor_id' => $user->id,
+                'action' => 'user_login',
+                'target_type' => 'user',
+                'target_id' => $user->id,
+            ]);
+        } catch (Throwable) {
+            // Continue even if audit log table is unavailable.
+        }
+
+        return redirect()->intended(route($this->dashboardRouteName($user)))
             ->with('status', 'Selamat datang kembali di EduConnect!');
     }
 
@@ -94,7 +95,9 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password_hash' => $validated['password'],
             'role' => $validated['role'],
-            'account_status' => 'active',
+            'account_status' => $validated['role'] === UserRole::Pengelola->value
+                ? User::ACCOUNT_STATUS_PENDING_VERIFICATION
+                : User::ACCOUNT_STATUS_ACTIVE,
             'location' => $validated['location'],
             'institution' => $validated['institution'],
             'bio' => $validated['bio'] ?? null,
@@ -111,11 +114,16 @@ class AuthController extends Controller
             // Continue even if audit log table is unavailable.
         }
 
+        if ($user->isPendingVerification()) {
+            return to_route('login')
+                ->with('status', 'Pendaftaran berhasil. Akun Pengelola Anda berstatus Menunggu Verifikasi dan dapat digunakan setelah disetujui administrator.');
+        }
+
         Auth::login($user);
 
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')
+        return redirect()->route($this->dashboardRouteName($user))
             ->with('status', 'Pendaftaran berhasil! Selamat bergabung di ekosistem EduConnect.');
     }
 
@@ -141,5 +149,19 @@ class AuthController extends Controller
             'reason' => 'Anda tidak memiliki hak akses ke halaman yang dituju.',
             'requiredRoles' => [],
         ], 403);
+    }
+
+    private function dashboardRouteName(User $user): string
+    {
+        $role = $user->role instanceof UserRole
+            ? $user->role
+            : UserRole::from((string) $user->role);
+
+        return match ($role) {
+            UserRole::Pelajar => 'dashboard.pelajar',
+            UserRole::Relawan => 'dashboard.relawan',
+            UserRole::Pengelola => 'dashboard.pengelola',
+            UserRole::Admin => 'dashboard.admin',
+        };
     }
 }

@@ -563,7 +563,7 @@
                         submitLabel: 'Daftar sebagai Relawan'
                     },
                     pengelola: {
-                        banner: 'Anda mendaftar sebagai <strong>Pengelola Tempat Belajar</strong> untuk mendaftarkan dan mengelola ruang belajar di direktori EduConnect.',
+                        banner: 'Anda mendaftar sebagai <strong>Pengelola Tempat Belajar</strong>. Akun berstatus Menunggu Verifikasi sebelum dapat menggunakan fitur Pengelola.',
                         displayNameLabel: 'Nama Penanggung Jawab / Pengelola',
                         displayNamePlaceholder: 'Contoh: Budi Santoso',
                         institutionLabel: 'Nama Ruang Belajar / Perpustakaan',

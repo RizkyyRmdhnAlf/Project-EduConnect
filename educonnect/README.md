@@ -85,7 +85,7 @@ EduConnect memiliki lima jenis pengguna dengan hak akses yang berbeda.
 | Pengunjung | Melihat informasi umum, direktori, dan tempat belajar yang dipublikasikan. |
 | Siswa/Pencari Layanan | Mencari tempat belajar, mengajukan kebutuhan pendidikan, dan memantau laporan sendiri. |
 | Relawan/Komunitas | Melihat kebutuhan yang dipublikasikan, menawarkan bantuan, dan mengelola penawaran sendiri. |
-| Pengelola Tempat Belajar | Mendaftarkan dan mengelola informasi tempat belajar serta melihat status verifikasi. |
+| Pengelola Tempat Belajar | Mendaftar, menunggu verifikasi akun, lalu mengelola informasi tempat belajar dan melihat status verifikasi. |
 | Administrator | Mengelola pengguna, memverifikasi data, menangani moderasi, dan melihat dashboard sistem. |
 
 ## 🚀 Cara Menggunakan Website
@@ -129,13 +129,14 @@ Relawan hanya dapat mengelola penawaran miliknya sendiri dan tidak dapat menguba
 
 ### D. Pengelola Tempat Belajar
 
-1. Registrasi dan login sebagai pengelola tempat belajar.
-2. Masuk ke dashboard pengelola.
-3. Pilih menu pengelolaan tempat belajar.
-4. Tambahkan informasi tempat belajar, seperti nama, deskripsi, alamat, jadwal, biaya, dan fasilitas.
-5. Kirim data untuk proses verifikasi.
-6. Pantau status verifikasi melalui dashboard.
-7. Perbarui informasi tempat belajar apabila terdapat perubahan.
+1. Registrasi sebagai pengelola tempat belajar.
+2. Tunggu administrator memverifikasi akun. Selama menunggu, akun belum dapat login atau menggunakan fitur khusus pengelola.
+3. Setelah akun disetujui, login dan masuk ke dashboard pengelola.
+4. Pilih menu pengelolaan tempat belajar.
+5. Tambahkan informasi tempat belajar, seperti nama, deskripsi, alamat, jadwal, biaya, dan fasilitas.
+6. Kirim data tempat belajar untuk proses verifikasi.
+7. Pantau status verifikasi melalui dashboard.
+8. Perbarui informasi tempat belajar apabila terdapat perubahan.
 
 Pengelola hanya dapat mengelola lokasi yang menjadi tanggung jawabnya dan tidak dapat menyetujui verifikasi lokasinya sendiri.
 

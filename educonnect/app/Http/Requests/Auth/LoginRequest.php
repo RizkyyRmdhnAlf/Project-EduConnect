@@ -75,7 +75,9 @@ class LoginRequest extends FormRequest
             Auth::logout();
 
             throw ValidationException::withMessages([
-                'email' => 'Akun Anda sedang dinonaktifkan. Silakan hubungi administrator EduConnect.',
+                'email' => $user->isPendingVerification()
+                    ? 'Akun Pengelola Anda berstatus Menunggu Verifikasi. Anda dapat masuk setelah administrator menyetujui pendaftaran.'
+                    : 'Akun Anda sedang dinonaktifkan. Silakan hubungi administrator EduConnect.',
             ]);
         }
 
