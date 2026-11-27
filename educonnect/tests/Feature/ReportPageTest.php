@@ -3,8 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Report;
+use App\Models\User;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ReportPageTest extends TestCase
@@ -85,5 +88,123 @@ class ReportPageTest extends TestCase
             ->assertViewHas('reports', fn (LengthAwarePaginator $reports): bool => $reports->currentPage() === 2
                 && $reports->count() === 1)
             ->assertSee('search=Laporan', false);
+    }
+
+    public function test_pelajar_can_open_the_report_creation_form(): void
+    {
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->get(route('reports.create'))
+            ->assertOk()
+            ->assertSee('Ajukan Kebutuhan Pendidikan')
+            ->assertSee('name="title"', false)
+            ->assertSee('name="category"', false)
+            ->assertSee('name="description"', false)
+            ->assertSee('name="location"', false)
+            ->assertSee('name="image"', false);
+    }
+
+    public function test_guest_is_redirected_to_login_when_opening_the_report_creation_form(): void
+    {
+        $this->get(route('reports.create'))
+            ->assertRedirect(route('login'));
+    }
+
+    public function test_user_without_report_submission_role_cannot_open_the_creation_form(): void
+    {
+        $this->actingAs(User::factory()->relawan()->create())
+            ->get(route('reports.create'))
+            ->assertForbidden();
+    }
+
+    public function test_valid_report_submission_stores_an_image_as_waiting_and_displays_the_report(): void
+    {
+        Storage::fake('public');
+        $user = User::factory()->pelajar()->create();
+
+        $response = $this->actingAs($user)->post(route('reports.store'), [
+            'title' => 'Bantuan buku untuk siswa',
+            'category' => 'Perlengkapan',
+            'description' => 'Siswa membutuhkan buku pelajaran tambahan.',
+            'location' => 'Yogyakarta',
+            'image' => UploadedFile::fake()->image('buku.jpg'),
+            'status' => 'Selesai',
+        ]);
+
+        $response
+            ->assertRedirect(route('reports.index'))
+            ->assertSessionHas('success', 'Laporan kebutuhan pendidikan berhasil dikirim.');
+
+        $report = Report::query()->where('title', 'Bantuan buku untuk siswa')->firstOrFail();
+
+        $this->assertSame('Menunggu', $report->status);
+        $this->assertSame('Perlengkapan', $report->category);
+        $this->assertSame('Yogyakarta', $report->location);
+        Storage::disk('public')->assertExists($report->image);
+
+        $this->get(route('reports.index'))
+            ->assertOk()
+            ->assertSee('Bantuan buku untuk siswa')
+            ->assertSee('Laporan kebutuhan pendidikan berhasil dikirim.');
+    }
+
+    public function test_report_can_be_submitted_without_an_image(): void
+    {
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->post(route('reports.store'), [
+                'title' => 'Pendampingan belajar matematika',
+                'category' => 'Bimbingan Belajar',
+                'description' => 'Membutuhkan relawan untuk pendampingan matematika.',
+                'location' => 'Bandung',
+            ])
+            ->assertRedirect(route('reports.index'));
+
+        $this->assertDatabaseHas('reports', [
+            'title' => 'Pendampingan belajar matematika',
+            'image' => null,
+            'status' => 'Menunggu',
+        ]);
+    }
+
+    public function test_invalid_report_submission_returns_field_errors_without_saving_a_report(): void
+    {
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->from(route('reports.create'))
+            ->post(route('reports.store'), [
+                'title' => '',
+                'category' => '',
+                'description' => '',
+                'location' => '',
+            ])
+            ->assertRedirect(route('reports.create'))
+            ->assertSessionHasErrors([
+                'title' => 'Judul laporan wajib diisi.',
+                'category' => 'Kategori kebutuhan wajib diisi.',
+                'description' => 'Deskripsi kebutuhan wajib diisi.',
+                'location' => 'Lokasi kebutuhan wajib diisi.',
+            ]);
+
+        $this->assertDatabaseCount('reports', 0);
+    }
+
+    public function test_non_image_upload_is_rejected_without_saving_a_report(): void
+    {
+        Storage::fake('public');
+
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->from(route('reports.create'))
+            ->post(route('reports.store'), [
+                'title' => 'Bantuan alat tulis',
+                'category' => 'Perlengkapan',
+                'description' => 'Membutuhkan alat tulis untuk kegiatan belajar.',
+                'location' => 'Surabaya',
+                'image' => UploadedFile::fake()->create('catatan.txt', 10, 'text/plain'),
+            ])
+            ->assertRedirect(route('reports.create'))
+            ->assertSessionHasErrors([
+                'image' => 'File yang diunggah harus berupa gambar.',
+            ]);
+
+        $this->assertDatabaseCount('reports', 0);
+        Storage::disk('public')->assertDirectoryEmpty('reports');
     }
 }

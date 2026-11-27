@@ -30,8 +30,39 @@
                         masyarakat dan lihat perkembangan penanganannya.
                     </p>
                 </div>
+
+                @auth
+                    @if (auth()->user()->hasRole('pelajar', 'admin'))
+                        <a
+                            href="{{ route('reports.create') }}"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14B8A6] px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-[#14B8A6]/20 transition hover:-translate-y-0.5 hover:bg-[#0D9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] focus-visible:ring-offset-2"
+                        >
+                            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                            Ajukan Kebutuhan
+                        </a>
+                    @endif
+                @else
+                    <a
+                        href="{{ route('login') }}"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14B8A6] px-5 py-3 text-sm font-semibold text-white shadow-sm shadow-[#14B8A6]/20 transition hover:-translate-y-0.5 hover:bg-[#0D9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] focus-visible:ring-offset-2"
+                    >
+                        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                        Masuk untuk Mengajukan
+                    </a>
+                @endauth
             </div>
         </section>
+
+        @if (session('success'))
+            <div
+                role="status"
+                aria-live="polite"
+                class="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-800"
+            >
+                <i class="fa-solid fa-circle-check mt-0.5 text-emerald-600" aria-hidden="true"></i>
+                <p>{{ session('success') }}</p>
+            </div>
+        @endif
 
         {{-- Statistik --}}
         <section class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
