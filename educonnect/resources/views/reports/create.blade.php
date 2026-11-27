@@ -62,17 +62,23 @@
                         <label for="category" class="mb-2 block text-sm font-semibold text-[#334155]">
                             Kategori <span class="text-red-500">*</span>
                         </label>
-                        <input
+                        <select
                             id="category"
                             name="category"
-                            type="text"
-                            value="{{ old('category') }}"
-                            maxlength="255"
+                            class="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#123B5D] outline-none transition focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10"
                             required
-                            placeholder="Contoh: Perlengkapan belajar"
-                            class="w-full rounded-xl border border-[#CBD5E1] bg-white px-4 py-3 text-sm text-[#123B5D] outline-none transition placeholder:text-[#94A3B8] focus:border-[#14B8A6] focus:ring-4 focus:ring-[#14B8A6]/10"
                             @error('category') aria-invalid="true" aria-describedby="category-error" @enderror
                         >
+                            <option value="">Pilih kategori kebutuhan</option>
+                            @foreach ($categories as $category)
+                                <option
+                                    value="{{ $category->name }}"
+                                    @selected(old('category') === $category->name)
+                                >
+                                    {{ $category->name }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('category')
                             <p id="category-error" class="mt-2 text-sm text-red-600">{{ $message }}</p>
                         @enderror
