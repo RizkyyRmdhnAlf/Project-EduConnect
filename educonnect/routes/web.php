@@ -54,10 +54,5 @@ Route::post('/tempat-belajar/{slug}/laporkan', [LearningPlaceController::class, 
 Route::get('/laporan', [ReportController::class, 'index'])
     ->name('reports.index');
 
-Route::get('/laporan/buat', [ReportController::class, 'create'])
-    ->name('reports.create');
-Route::post('/laporan', [ReportController::class, 'store'])
-    ->name('reports.store');
-
 Route::get('/laporan/{report}', [ReportController::class, 'show'])
     ->name('reports.show');

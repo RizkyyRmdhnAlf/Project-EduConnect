@@ -13,15 +13,6 @@
 
     <main class="mx-auto max-w-7xl px-6 py-10">
 
-        @if (session('success'))
-            <div role="status" aria-live="polite" class="mb-6 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-medium text-emerald-800">
-                <svg class="mt-0.5 h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                    <path d="m5 12 4 4L19 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                </svg>
-                <span>{{ session('success') }}</span>
-            </div>
-        @endif
-
         {{-- Header --}}
         <section class="mb-8">
             <span class="text-sm font-semibold tracking-wider text-[#14B8A6]">
@@ -39,16 +30,6 @@
                         masyarakat dan lihat perkembangan penanganannya.
                     </p>
                 </div>
-
-                <a
-                    href="{{ route('reports.create') }}"
-                    class="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#14B8A6] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0D9488] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#14B8A6] focus-visible:ring-offset-2"
-                >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <path d="M12 5v14m-7-7h14" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-                    </svg>
-                    Buat Laporan
-                </a>
             </div>
         </section>
 
