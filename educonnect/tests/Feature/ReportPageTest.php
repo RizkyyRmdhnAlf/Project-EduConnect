@@ -149,6 +149,8 @@ class ReportPageTest extends TestCase
         $this->assertSame('Menunggu', $report->status);
         $this->assertSame('Buku', $report->category);
         $this->assertSame('Yogyakarta', $report->location);
+        $this->assertSame($user->id, $report->reporter_id);
+        $this->assertTrue($report->reporter->is($user));
         Storage::disk('public')->assertExists($report->image);
 
         $this->get(route('reports.index'))
@@ -156,6 +158,12 @@ class ReportPageTest extends TestCase
             ->assertSee('Bantuan buku untuk siswa')
             ->assertSee('Buku')
             ->assertSee('Laporan kebutuhan pendidikan berhasil dikirim.');
+
+        $this->get(route('reports.show', $report))
+            ->assertOk()
+            ->assertSee('Bantuan buku untuk siswa')
+            ->assertSee('Buku')
+            ->assertSee('Siswa membutuhkan buku pelajaran tambahan.');
     }
 
     public function test_report_can_be_submitted_without_an_image(): void
@@ -197,6 +205,23 @@ class ReportPageTest extends TestCase
             ]);
 
         $this->assertDatabaseCount('reports', 0);
+    }
+
+    public function test_report_validation_failure_shows_a_failure_notification_on_the_form(): void
+    {
+        $this->actingAs(User::factory()->pelajar()->create())
+            ->from(route('reports.create'))
+            ->post(route('reports.store'), [
+                'title' => '',
+                'category' => '',
+                'description' => '',
+                'location' => '',
+            ])
+            ->assertRedirect(route('reports.create'));
+
+        $this->get(route('reports.create'))
+            ->assertOk()
+            ->assertSee('Laporan belum dapat disimpan. Periksa kembali isian yang ditandai.');
     }
 
     public function test_non_image_upload_is_rejected_without_saving_a_report(): void

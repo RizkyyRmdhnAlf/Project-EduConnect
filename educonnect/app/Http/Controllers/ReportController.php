@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\NeedCategory;
 use App\Models\Report;
+use App\Models\User;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use RuntimeException;
@@ -87,6 +90,12 @@ class ReportController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $user = $request->user();
+
+        if (! ($user instanceof User)) {
+            return redirect()->guest(route('login'));
+        }
+
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:150'],
             'category' => [
@@ -120,18 +129,32 @@ class ReportController extends Controller
             $imagePath = $validated['image']->store('reports', 'public');
 
             if ($imagePath === false) {
-                throw new RuntimeException('Foto laporan gagal disimpan.');
+                return back()
+                    ->withInput()
+                    ->with('error', 'Foto laporan gagal disimpan. Silakan coba kembali.');
             }
         }
 
-        Report::query()->create([
-            'title' => $validated['title'],
-            'category' => $validated['category'],
-            'description' => $validated['description'],
-            'location' => $validated['location'],
-            'image' => $imagePath,
-            'status' => 'Menunggu',
-        ]);
+        try {
+            $user->submittedReports()->create([
+                'title' => $validated['title'],
+                'category' => $validated['category'],
+                'description' => $validated['description'],
+                'location' => $validated['location'],
+                'image' => $imagePath,
+                'status' => 'Menunggu',
+            ]);
+        } catch (QueryException $exception) {
+            report($exception);
+
+            if ($imagePath !== null && ! Storage::disk('public')->delete($imagePath)) {
+                report(new RuntimeException('Foto laporan gagal dibersihkan setelah penyimpanan laporan gagal.'));
+            }
+
+            return back()
+                ->withInput()
+                ->with('error', 'Laporan gagal disimpan. Silakan coba kembali.');
+        }
 
         return to_route('reports.index')
             ->with('success', 'Laporan kebutuhan pendidikan berhasil dikirim.');

@@ -29,6 +29,17 @@
                 </p>
             </div>
 
+            @if (session('error') || $errors->any())
+                <div
+                    role="alert"
+                    aria-live="assertive"
+                    class="mx-6 mt-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-800 sm:mx-10"
+                >
+                    <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-600" aria-hidden="true"></i>
+                    <p>{{ session('error', 'Laporan belum dapat disimpan. Periksa kembali isian yang ditandai.') }}</p>
+                </div>
+            @endif
+
             <form
                 action="{{ route('reports.store') }}"
                 method="POST"
