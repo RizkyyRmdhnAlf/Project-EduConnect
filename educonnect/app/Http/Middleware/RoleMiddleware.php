@@ -22,8 +22,12 @@ class RoleMiddleware
         }
 
         if (! $user->isActive()) {
+            $reason = $user->isPendingVerification()
+                ? 'Akun Pengelola Anda berstatus Menunggu Verifikasi. Fitur khusus Pengelola tersedia setelah disetujui administrator.'
+                : 'Akun Anda saat ini tidak aktif atau sedang dalam peninjauan administrator.';
+
             return response()->view('auth.access-denied', [
-                'reason' => 'Akun Anda saat ini tidak aktif atau sedang dalam peninjauan administrator.',
+                'reason' => $reason,
                 'requiredRoles' => $roles,
             ], 403);
         }

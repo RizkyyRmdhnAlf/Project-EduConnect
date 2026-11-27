@@ -101,6 +101,16 @@
                                 Masukkan alamat email dan kata sandi yang terdaftar pada akun Anda.
                             </p>
 
+                            @if (session('status'))
+                                <div
+                                    role="status"
+                                    aria-live="polite"
+                                    class="mt-6 rounded-2xl border border-[#99D5CF] bg-[#EAF6F4] px-4 py-3 text-sm text-[#123B5D]"
+                                >
+                                    {{ session('status') }}
+                                </div>
+                            @endif
+
                             {{-- Pesan Error Terstruktur --}}
                             @if ($errors->any())
                                 <div
